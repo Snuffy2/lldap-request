@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+</head>
+<body>
+  <h2>Pending Account Requests</h2>
+  <ul>
+    {% for req in requests %}
+      <li>
+        {{ req[1] }} ({{ req[2] }}) — 
+        <a href="/approve/{{ req[0] }}">✅ Approve</a> | 
+        <a href="/deny/{{ req[0] }}">❌ Deny</a>
+      </li>
+    {% endfor %}
+  </ul>
+</body>
+</html>
