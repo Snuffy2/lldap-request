@@ -1,4 +1,5 @@
 name: Build and Publish GitHub Container Docker Image
+
 on:
   release:
     types: [published, edited]
@@ -7,12 +8,19 @@ on:
       - main
   workflow_dispatch:
 
+permissions:
+    contents: read
+    packages: write
+    attestations: write
+    id-token: write
+
 jobs:
   build_and_publish_docker_image:
     runs-on: ubuntu-latest
     steps:
       - name: Debug Variables
         run: |
+            echo "github.actor: ${{ github.actor }}"
             echo "github.event_name: ${{ github.event_name }}"
             echo "github.ref_name: ${{ github.ref_name }}"
             echo "github.event.repository.default_branch: ${{ github.event.repository.default_branch }}"
