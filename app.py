@@ -1,5 +1,6 @@
 """Main lldap-request code."""
 
+import logging
 from pathlib import Path
 import sqlite3
 
@@ -7,6 +8,9 @@ from flask import Flask, redirect, render_template, request
 
 from lldap_cli_wrapper import create_user
 
+from .const import VERSION
+
+_LOGGER: logging.Logger = logging.getLogger(__name__)
 app = Flask("lldap-request")
 
 DB_DIR = Path("database")
@@ -98,4 +102,5 @@ def deny(req_id):
 
 
 if __name__ == "__main__":
+    _LOGGER.info("Starting lldap-request %s", VERSION)
     app.run(host="0.0.0.0")
