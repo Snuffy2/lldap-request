@@ -1,0 +1,17 @@
+services:
+  lldap-request:
+    build: .
+    container_name: lldap-request
+    hostname: lldap-request
+    restart: unless-stopped
+    ports:
+      - "5005:5000"
+    volumes:
+      - ./database:/app/database
+      - ./lldap_config:/app/lldap_config  # Your local lldap config path
+    environment:
+      AUTHELIA_URL: https://auth.domain.com
+      LLDAP_CONFIG: /app/lldap_config/config.toml
+      LLDAP_HTTPURL: http://lldap:17170
+      LLDAP_USERNAME: admin
+      LLDAP_PASSWORD: changeme
