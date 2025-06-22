@@ -9,8 +9,8 @@
   <ul>
     {% for req in requests %}
       <li>
-        {{ req[1] }} ({{ req[2] }}) — 
-        <a href="/approve/{{ req[0] }}">✅ Approve</a> | 
+        {{ req[1] }} ({{ req[2] }}) —
+        <a href="/approve/{{ req[0] }}">✅ Approve</a> |
         <a href="/deny/{{ req[0] }}">❌ Deny</a>
       </li>
     {% endfor %}
