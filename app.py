@@ -6,9 +6,8 @@ import sqlite3
 
 from flask import Flask, redirect, render_template, request
 
+from const import VERSION
 from lldap_cli_wrapper import create_user
-
-from .const import VERSION
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 app = Flask("lldap-request")
