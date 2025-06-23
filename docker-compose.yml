@@ -1,6 +1,7 @@
 services:
   lldap-request:
-    build: .
+    image: ghcr.io/snuffy2/lldap-request:latest
+    #image: ghcr.io/snuffy2/lldap-request:edge
     container_name: lldap-request
     hostname: lldap-request
     restart: unless-stopped
