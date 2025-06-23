@@ -17,7 +17,5 @@ RUN wget https://raw.githubusercontent.com/Zepmann/lldap-cli/refs/heads/main/lld
 WORKDIR /app
 COPY . .
 
-RUN chmod +x /app/lldap_cli_wrapper.py
-
 EXPOSE 5000
 CMD ["gunicorn", "-b", "0.0.0.0:5000", "app:app"]
