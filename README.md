@@ -2,9 +2,10 @@
 
 A working, but mostly proof-of-concept example, of a web page to request new LLDAP accounts with an admin page to approve or deny these requests.
 
-When approved, it triggers an Authelia reset password link to send an email to the user to reset (aka. setup) their password.
+When approved, it triggers an Authelia reset password link to email the user to reset (aka. setup) their password.
 
 Example docker-compose.yml:
+
 ```yaml
 services:
   lldap-request:
@@ -27,6 +28,7 @@ services:
 ```
 
 Example docker-compose-traefik.yml:
+
 ```yaml
 services:
   lldap-request:
