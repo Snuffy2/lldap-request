@@ -68,6 +68,10 @@ services:
       - traefik.http.routers.lldap-request.service=lldap-request
       - traefik.http.services.lldap-request.loadbalancer.server.port=5000
 ```
+![Request Page](images/request_account.png)
+
+![Admin Page](images/admin.png)
+
 
 There are lots of ways this could be improved/expanded:
 * Support optional basic authentication for the admin page
