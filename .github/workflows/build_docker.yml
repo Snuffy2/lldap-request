@@ -71,6 +71,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Repository String
+        if: ${{ github.event_name == 'release' && github.event.release.prerelease == false && github.event.release.draft == false && github.event.release.target_commitish == github.event.repository.default_branch }}
         uses: Entepotenz/change-string-case-action-min-dependencies@v1
         id: repo-string
         with:
@@ -78,7 +79,7 @@ jobs:
 
       - name: Add 'latest' tag manually for valid releases
         if: ${{ github.event_name == 'release' && github.event.release.prerelease == false && github.event.release.draft == false && github.event.release.target_commitish == github.event.repository.default_branch }}
-        run: echo "tags=${{ steps.meta.outputs.tags }},ghcr.io/${{ steps.repo-string.outputs.lowercase }}:latest" >> "$GITHUB_OUTPUT"
+        run: echo "tags=${{ steps.meta.outputs.tags }},ghcr.io/${{ steps.repo-string.outputs.lowercase }}:edge,ghcr.io/${{ steps.repo-string.outputs.lowercase }}:latest" >> "$GITHUB_OUTPUT"
         id: custom_tags
 
       - name: Build and Push Docker Container
