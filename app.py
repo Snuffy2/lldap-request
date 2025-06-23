@@ -38,10 +38,10 @@ def init_db() -> None:
 init_db()
 
 
-@app.route("/")
+@app.route("/", methods=["GET"])
 def index():
     """Show the main request account form."""
-    return render_template("request_form.html")
+    return render_template("index.html")
 
 
 @app.route("/submit", methods=["POST"])
