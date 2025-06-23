@@ -32,7 +32,7 @@ services:
       LLDAP_PASSWORD: changeme
 ```
 
-This does not handle any kind of security or authentication itself. Instead, it relies on something external to control access. In the example below, I use Authelia and Traefik. Traefik restricts the new user request to only load from internal IPs. The admin page requires Authelia approval and I have that address (lldap.domain.com) restriced to the admin group.
+This does not handle any kind of security or authentication itself. Instead, it relies on something external to control access. In the example below, it uses Authelia and Traefik. Traefik restricts the new user request to only load from internal IPs. The admin page requires Authelia approval and that address (lldap-request.domain.com) is restricted to the admin group.
 
 ### Example docker-compose-traefik.yml:
 
