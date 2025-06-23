@@ -1,10 +1,15 @@
 # lldap-request
 
-A working, but mostly proof-of-concept example, of a web page to request new LLDAP accounts with an admin page to approve or deny these requests.
+A working, but mostly proof-of-concept example, of a web page to request new [lldap](https://github.com/lldap/lldap) accounts with an admin page to approve or deny these requests.
 
-When approved, it triggers an Authelia reset password link to email the user to reset (aka. setup) their password.
+When approved, it triggers an [Authelia](https://github.com/authelia/authelia) reset password link to email the user to reset (aka. setup) their password.
 
-Example docker-compose.yml:
+It uses [lldap-cli](https://github.com/Zepmann/lldap-cli) in the docker container to interface with lldap.
+
+### Example docker-compose.yml:
+
+* Request account: http://IP:5005
+* Admin: http://IP:5005/admin
 
 ```yaml
 services:
@@ -27,7 +32,12 @@ services:
       LLDAP_PASSWORD: changeme
 ```
 
-Example docker-compose-traefik.yml:
+This does not handle any kind of security or authentication itself. Instead, it relies on something external to control access. In the example below, I use Authelia and Traefik. Traefik restricts the new user request to only load from internal IPs. The admin page requires Authelia approval and I have that address (lldap.domain.com) restriced to the admin group.
+
+### Example docker-compose-traefik.yml:
+
+* Request account: https://lldap-request.domain.com
+* Admin: https://lldap-request.domain.com/admin
 
 ```yaml
 services:
@@ -58,3 +68,12 @@ services:
       - traefik.http.routers.lldap-request.service=lldap-request
       - traefik.http.services.lldap-request.loadbalancer.server.port=5000
 ```
+
+There are lots of ways this could be improved/expanded:
+* Support optional basic authentication for the admin page
+* Put new user sign up behind a password or something similar
+* Don't rely on Authelia for the password reset email and/or support other tools (ex. Authentik, Keycloak, etc.)
+* Sent a notice to an Admin when there is a new user to approve
+* Connect to lldap directly using [GraphQL API calls](https://github.com/lldap/lldap/blob/main/schema.graphql) (not relying on lldap-cli)
+* Any number of UI improvements
+
