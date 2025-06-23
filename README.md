@@ -2,7 +2,7 @@
 
 A working, but mostly proof-of-concept example, of a web page to request new [lldap](https://github.com/lldap/lldap) accounts with an admin page to approve or deny these requests.
 
-When approved, it triggers an [Authelia](https://github.com/authelia/authelia) reset password link to email the user to reset (aka. setup) their password.
+When approved, it creates the account in lldap, adds it to the authelia_users group and triggers an [Authelia](https://github.com/authelia/authelia) reset password link to email the user to reset (aka. setup) their password.
 
 It uses [lldap-cli](https://github.com/Zepmann/lldap-cli) in the docker container to interface with lldap.
 
@@ -78,5 +78,6 @@ services:
 * Don't rely on Authelia for the password reset email and/or support other tools (ex. Authentik, Keycloak, etc.)
 * Sent a notice to an Admin when there is a new user to approve
 * Connect to lldap directly using [GraphQL API calls](https://github.com/lldap/lldap/blob/main/schema.graphql) (not relying on lldap-cli)
+* Use environment variable for what group(s) to add the new user to
 * Any number of UI improvements
 
