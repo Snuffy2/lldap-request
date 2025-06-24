@@ -2,21 +2,21 @@
 
 A working, but mostly proof-of-concept example, of a web page to request new [lldap](https://github.com/lldap/lldap) accounts with an admin page to approve or deny these requests.
 
-When approved, it creates the account in lldap, adds it to the group if defined and triggers an [Authelia](https://github.com/authelia/authelia) reset password link to email the user to reset (aka. setup) their password.
+When approved, it creates the account in lldap, adds it to that group if one is defined, and triggers an [Authelia](https://github.com/authelia/authelia) reset password link to email the user to reset (aka. setup) their password.
 
 It uses [lldap-cli](https://github.com/Zepmann/lldap-cli) in the docker container to interface with lldap.
 
 ## Docker Environment Variables
 
 | Name | Required | Default | Description |
-| --- | :---: | --- | --- |
-| AUTHELIA_URL | X |  | ex. https://auth.domain.com |
-| LLDAP_CONFIG | |  /app/lldap_config/config.toml | The location in the container and name of the lldap config file |
-| LLDAP_HTTPURL | | http://lldap:17170 | The base address of lldap 
-| LLDAP_USERNAME | X | | The lldap user that can create new accounts |
-| LLDAP_PASSWORD | X | | The lldap password that can create new accounts |
-| LLDAP_USER_GROUP | | | If set, the new user will be added to the specified lldap group |
-| DEBUG | | false | Shows debug logging if true |
+| --- | :---: | --- | --- |  
+| AUTHELIA_URL | X |  | e.g. <https://auth.domain.com> |
+| LLDAP_USERNAME | X |  | lldap user with account-creation rights |
+| LLDAP_PASSWORD | X |  | Password for the above user |
+| LLDAP_CONFIG |  | /app/lldap_config/config.toml | Location & name of the lldap config file |
+| LLDAP_HTTPURL |  | <http://lldap:17170> | Base address of lldap |
+| LLDAP_USER_GROUP |  |  | Group to add new users to (if set) |
+| DEBUG |  | false | Show debug logging if `true` |
 
 ### Example docker-compose.yml
 
@@ -83,6 +83,7 @@ services:
 <img src="images/admin.png">
 
 #### There are many ways this can be improved/expanded
+
 * Support optional basic authentication for the admin page
 * Put new user sign up behind a password or something similar
 * Don't rely on Authelia for the password reset email and/or support other tools (ex. Authentik, Keycloak, etc.)
