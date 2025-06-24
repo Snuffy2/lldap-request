@@ -11,5 +11,5 @@ DEFAULT_LOGLEVEL = logging.INFO
 
 REQUIRED_VARS: list[str] = ["LLDAP_USERNAME", "LLDAP_PASSWORD", "AUTHELIA_URL"]
 
-DEFAULT_LLDAP_CONFIG = "/app/lldap_config/config.toml"
+DEFAULT_LLDAP_CONFIG = "/app/data/lldap_config.toml"
 DEFAULT_LLDAP_HTTPURL = "http://lldap:17170"

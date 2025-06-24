@@ -9,7 +9,7 @@ services:
       - "5005:5000"
     volumes:
       - ./database:/app/database
-      - ./lldap_config:/app/lldap_config  # Your local lldap config path
+      - ./lldap_data:/app/data  # Your local lldap config path
     environment:
       AUTHELIA_URL: https://auth.domain.com
       LLDAP_USERNAME: admin
