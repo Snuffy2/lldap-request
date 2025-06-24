@@ -6,9 +6,17 @@ import subprocess
 
 import requests
 
+from const import DEFAULT_LLDAP_CONFIG, DEFAULT_LLDAP_HTTPURL
+
 
 def lldap_login() -> bool:
     """Login to lldap."""
+
+    if "LLDAP_CONFIG" not in os.environ:
+        os.environ["LLDAP_CONFIG"] = DEFAULT_LLDAP_CONFIG
+    if "LLDAP_HTTPURL" not in os.environ:
+        os.environ["LLDAP_HTTPURL"] = DEFAULT_LLDAP_HTTPURL
+
     result = subprocess.run(
         ["lldap-cli", "login"],
         check=False,
