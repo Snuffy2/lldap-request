@@ -7,7 +7,7 @@ import sqlite3
 
 from flask import Flask, redirect, render_template, request
 
-from const import DEFAULT_LOGLEVEL, LOG_DATE_FORMAT, LOG_FORMAT, VERSION
+from const import DEFAULT_LOGLEVEL, LOG_DATE_FORMAT, LOG_FORMAT, REQUIRED_VARS, VERSION
 from lldap_cli_wrapper import create_user
 
 DEBUG = os.getenv("DEBUG", "")
@@ -28,6 +28,10 @@ _LOGGER: logging.Logger = logging.getLogger(__name__)
 
 _LOGGER.info("Starting lldap-request %s", VERSION)
 app = Flask("lldap-request")
+
+for var in REQUIRED_VARS:
+    if not os.getenv(var):
+        raise OSError(f"Required environment variable {var} is not set")
 
 DB_DIR = Path("database")
 DB_PATH: Path = DB_DIR / "requests.db"
