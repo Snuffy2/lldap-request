@@ -12,6 +12,7 @@ services:
       AUTHELIA_URL: https://auth.domain.com
       LLDAP_USERNAME: admin
       LLDAP_PASSWORD: changeme
+      LLDAP_USER_GROUP: authelia_users
     labels:
       - traefik.enable=true
       - 'traefik.http.routers.lldap-request-admin.rule=Host(`lldap-request.domain.com`) && Path(`/admin`)'

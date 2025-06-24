@@ -1,15 +1,32 @@
 """Main lldap-request code."""
 
 import logging
+import os
 from pathlib import Path
 import sqlite3
 
 from flask import Flask, redirect, render_template, request
 
-from const import VERSION
+from const import DEFAULT_LOGLEVEL, LOG_DATE_FORMAT, LOG_FORMAT, VERSION
 from lldap_cli_wrapper import create_user
 
+DEBUG = os.getenv("DEBUG", "")
+if DEBUG.lower() in {"1", "true", "yes"}:
+    LOGLEVEL = logging.DEBUG
+else:
+    LOGLEVEL = DEFAULT_LOGLEVEL
+
+logging.basicConfig(
+    format=LOG_FORMAT,
+    datefmt=LOG_DATE_FORMAT,
+    level=LOGLEVEL,
+    handlers=[
+        logging.StreamHandler(),
+    ],
+)
 _LOGGER: logging.Logger = logging.getLogger(__name__)
+
+_LOGGER.info("Starting lldap-request %s", VERSION)
 app = Flask("lldap-request")
 
 DB_DIR = Path("database")
@@ -41,7 +58,7 @@ init_db()
 @app.route("/", methods=["GET"])
 def index():
     """Show the main request account form."""
-    return render_template("index.html")
+    return render_template("index.html", version=VERSION)
 
 
 @app.route("/submit", methods=["POST"])
@@ -68,7 +85,7 @@ def admin():
     """Show the admin page."""
     with sqlite3.connect(DB_PATH) as conn:
         requests = conn.execute("SELECT * FROM requests WHERE status = 'pending'").fetchall()
-    return render_template("admin.html", requests=requests)
+    return render_template("admin.html", requests=requests, version=VERSION)
 
 
 @app.route("/approve/<int:req_id>")
@@ -98,8 +115,3 @@ def deny(req_id):
         conn.execute("UPDATE requests SET status = 'denied' WHERE id = ?", (req_id,))
         conn.commit()
     return redirect("/admin")
-
-
-if __name__ == "__main__":
-    _LOGGER.info("Starting lldap-request %s", VERSION)
-    app.run(host="0.0.0.0")

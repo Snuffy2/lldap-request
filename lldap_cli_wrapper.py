@@ -33,6 +33,7 @@ def create_user(uid, email, displayname=None, firstname=None, lastname=None):
         lldap_login()
 
     authelia_url: str = os.getenv("AUTHELIA_URL", "").rstrip("/")
+    group_name: str = os.getenv("LLDAP_USER_GROUP", "").strip()
     cmd: list[str] = ["lldap-cli", "user", "add", uid, email]
     if displayname:
         cmd += ["-d", displayname]
@@ -47,13 +48,19 @@ def create_user(uid, email, displayname=None, firstname=None, lastname=None):
     if result.returncode != 0:
         return False, result.stderr
 
-    # Add to group
-    group_cmd: list[str] = ["lldap-cli", "user", "group", "add", uid, "authelia_users"]
-    group_result = subprocess.run(
-        group_cmd, check=False, capture_output=True, text=True, env=os.environ.copy(), timeout=30
-    )
-    if group_result.returncode != 0:
-        return False, f"User created but failed to add to group: {group_result.stderr}"
+    # Add to group if specified
+    if group_name:
+        group_cmd: list[str] = ["lldap-cli", "user", "group", "add", uid, group_name]
+        group_result = subprocess.run(
+            group_cmd,
+            check=False,
+            capture_output=True,
+            text=True,
+            env=os.environ.copy(),
+            timeout=30,
+        )
+        if group_result.returncode != 0:
+            return False, f"User created but failed to add to group: {group_result.stderr}"
 
     # Trigger password reset via Authelia
     try:
@@ -80,4 +87,6 @@ def create_user(uid, email, displayname=None, firstname=None, lastname=None):
     except Exception as e:  # noqa: BLE001
         return False, f"User created but Authelia reset failed (unexpected error): {e!s}"
 
-    return True, "User created, group added, and password reset triggered"
+    return True, "User created" + (
+        ", group added," if group_name else ""
+    ) + " and password reset triggered"
