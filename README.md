@@ -2,11 +2,23 @@
 
 A working, but mostly proof-of-concept example, of a web page to request new [lldap](https://github.com/lldap/lldap) accounts with an admin page to approve or deny these requests.
 
-When approved, it creates the account in lldap, adds it to the authelia_users group and triggers an [Authelia](https://github.com/authelia/authelia) reset password link to email the user to reset (aka. setup) their password.
+When approved, it creates the account in lldap, adds it to that group if one is defined, and triggers an [Authelia](https://github.com/authelia/authelia) reset password link to email the user to reset (aka. setup) their password.
 
 It uses [lldap-cli](https://github.com/Zepmann/lldap-cli) in the docker container to interface with lldap.
 
-### Example docker-compose.yml:
+## Docker Environment Variables
+
+| Name | Required | Default | Description |
+| --- | :---: | --- | --- |  
+| AUTHELIA_URL | X |  | e.g. <https://auth.domain.com> |
+| LLDAP_USERNAME | X |  | lldap user with account-creation rights |
+| LLDAP_PASSWORD | X |  | Password for the above user |
+| LLDAP_CONFIG |  | /app/lldap_config/config.toml | Location & name of the lldap config file |
+| LLDAP_HTTPURL |  | <http://lldap:17170> | Base address of lldap |
+| LLDAP_USER_GROUP |  |  | Group to add new users to (if set) |
+| DEBUG |  | false | Show debug logging if `true` |
+
+### Example docker-compose.yml
 
 * Request account: http://IP:5005
 * Admin: http://IP:5005/admin
@@ -26,15 +38,13 @@ services:
       - ./lldap_config:/app/lldap_config  # Your local lldap config path
     environment:
       AUTHELIA_URL: https://auth.domain.com
-      LLDAP_CONFIG: /app/lldap_config/config.toml
-      LLDAP_HTTPURL: http://lldap:17170
       LLDAP_USERNAME: admin
       LLDAP_PASSWORD: changeme
 ```
 
 This does not handle any kind of security or authentication itself. Instead, it relies on something external to control access. In the example below, it uses Authelia and Traefik. Traefik restricts the new user request to only load from internal IPs. The admin page requires Authelia approval and that address (lldap-request.domain.com) is restricted to the admin group.
 
-### Example docker-compose-traefik.yml:
+### Example docker-compose-traefik.yml
 
 * Request account: https://lldap-request.domain.com
 * Admin: https://lldap-request.domain.com/admin
@@ -52,10 +62,10 @@ services:
       - ./lldap_config:/app/lldap_config  # Your local lldap config path
     environment:
       AUTHELIA_URL: https://auth.domain.com
-      LLDAP_CONFIG: /app/lldap_config/config.toml
-      LLDAP_HTTPURL: http://lldap:17170
       LLDAP_USERNAME: admin
       LLDAP_PASSWORD: changeme
+      LLDAP_USER_GROUP: authelia_users
+      DEBUG: 'true'
     labels:
       - traefik.enable=true
       - 'traefik.http.routers.lldap-request-admin.rule=Host(`lldap-request.domain.com`) && Path(`/admin`)'
@@ -72,12 +82,13 @@ services:
 
 <img src="images/admin.png">
 
-#### There are lots of ways this could be improved/expanded:
+#### There are many ways this can be improved/expanded
+
 * Support optional basic authentication for the admin page
 * Put new user sign up behind a password or something similar
 * Don't rely on Authelia for the password reset email and/or support other tools (ex. Authentik, Keycloak, etc.)
 * Sent a notice to an Admin when there is a new user to approve
 * Connect to lldap directly using [GraphQL API calls](https://github.com/lldap/lldap/blob/main/schema.graphql) (not relying on lldap-cli)
-* Use environment variable for what group(s) to add the new user to
+* ~~Use environment variable for what group(s) to add the new user to~~
 * Any number of UI improvements
 
