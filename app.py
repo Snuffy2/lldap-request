@@ -126,7 +126,7 @@ def submit() -> str:
 
     return render_template(
         "submitted.html",
-        message="Your request has been submitted.",
+        message="Your request has been submitted",
         redirect_url=redirect_url,
         delay=10,
         version=VERSION,
