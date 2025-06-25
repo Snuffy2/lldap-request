@@ -1,20 +1,22 @@
 # lldap-request
 
-A working, but mostly proof-of-concept example, of a web page to request new [lldap](https://github.com/lldap/lldap) accounts with an admin page to approve or deny these requests.
+A working, but simple example, of a web page to request new [lldap](https://github.com/lldap/lldap) accounts with an admin page to approve or deny these requests.
 
-When approved, it creates the account in lldap, adds it to that group if one is defined, and triggers an [Authelia](https://github.com/authelia/authelia) reset password link to email the user to reset (aka. setup) their password.
+When approved, it creates the account in lldap, adds it to a group if one is defined, and triggers a reset password link to email the user to reset (aka. setup) their password.
 
 It uses [lldap-cli](https://github.com/Zepmann/lldap-cli) in the docker container to interface with lldap.
 
 ## Docker Environment Variables
 
 | Name | Required | Default | Description |
-| --- | :---: | --- | --- |  
-| AUTHELIA_URL | X |  | e.g. <https://auth.domain.com> |
+| --- | :---: | --- | --- |
+| RESET_TYPE | | lldap | What to send the reset password email from. Email must be set up and reset password enabled in the selected application. Options: `lldap`, `authelia` |
+| LLDAP_URL | X | | e.g. <https://lldap.domain.com><br />Required if RESET_TYPE is lldap |
+| AUTHELIA_URL | X |  | e.g. <https://auth.domain.com><br />Required if RESET_TYPE is authelia |
 | LLDAP_USERNAME | X |  | lldap user with account-creation rights |
 | LLDAP_PASSWORD | X |  | Password for the above user |
 | LLDAP_CONFIG |  | /app/data/lldap_config.toml | Location (in the container) & name of the lldap config file<br />Ensure the volume mount also aligns with this |
-| LLDAP_HTTPURL |  | <http://lldap:17170> | Base address of lldap |
+| LLDAP_HTTPURL |  | <http://lldap:17170> | Internal, base address of lldap |
 | LLDAP_USER_GROUP |  |  | Group to add new users to (if set) |
 | DEBUG |  | false | Show debug logging if `true` |
 
@@ -37,7 +39,7 @@ services:
       - ./database:/app/database
       - ./lldap_data:/app/data  # Your local lldap config path
     environment:
-      AUTHELIA_URL: https://auth.domain.com
+      LLDAP_URL: https://lldap.domain.com
       LLDAP_USERNAME: admin
       LLDAP_PASSWORD: changeme
 ```
@@ -61,6 +63,7 @@ services:
       - ./database:/app/database
       - ./lldap_data:/app/data  # Your local lldap config path
     environment:
+      RESET_TYPE: authelia
       AUTHELIA_URL: https://auth.domain.com
       LLDAP_USERNAME: admin
       LLDAP_PASSWORD: changeme
@@ -86,9 +89,9 @@ services:
 
 * Support optional basic authentication for the admin page
 * Put new user sign up behind a password or something similar
-* Don't rely on Authelia for the password reset email and/or support other tools (ex. Authentik, Keycloak, etc.)
 * Sent a notice to an Admin when there is a new user to approve
 * Connect to lldap directly using [GraphQL API calls](https://github.com/lldap/lldap/blob/main/schema.graphql) (not relying on lldap-cli)
-* ~~Use environment variable for what group(s) to add the new user to~~
 * Any number of UI improvements
+* ~~Use environment variable for what group(s) to add the new user to~~
+* ~~Don't rely on Authelia for the password reset email and/or support other tools (ex. Authentik, Keycloak, etc.)~~
 
