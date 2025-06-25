@@ -13,7 +13,7 @@ It uses [lldap-cli](https://github.com/Zepmann/lldap-cli) in the docker containe
 | AUTHELIA_URL | X |  | e.g. <https://auth.domain.com> |
 | LLDAP_USERNAME | X |  | lldap user with account-creation rights |
 | LLDAP_PASSWORD | X |  | Password for the above user |
-| LLDAP_CONFIG |  | /app/lldap_config/config.toml | Location & name of the lldap config file |
+| LLDAP_CONFIG |  | /app/data/lldap_config.toml | Location (in the container) & name of the lldap config file<br />Ensure the volume mount also aligns with this |
 | LLDAP_HTTPURL |  | <http://lldap:17170> | Base address of lldap |
 | LLDAP_USER_GROUP |  |  | Group to add new users to (if set) |
 | DEBUG |  | false | Show debug logging if `true` |
@@ -35,7 +35,7 @@ services:
       - "5005:5000"
     volumes:
       - ./database:/app/database
-      - ./lldap_config:/app/lldap_config  # Your local lldap config path
+      - ./lldap_data:/app/data  # Your local lldap config path
     environment:
       AUTHELIA_URL: https://auth.domain.com
       LLDAP_USERNAME: admin
@@ -59,7 +59,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./database:/app/database
-      - ./lldap_config:/app/lldap_config  # Your local lldap config path
+      - ./lldap_data:/app/data  # Your local lldap config path
     environment:
       AUTHELIA_URL: https://auth.domain.com
       LLDAP_USERNAME: admin
