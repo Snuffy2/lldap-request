@@ -1,6 +1,6 @@
 # lldap-request
 
-A working, but simple example, of a web page to request new [lldap](https://github.com/lldap/lldap) accounts with an admin page to approve or deny these requests.
+A working, but simple web tool to request new [lldap](https://github.com/lldap/lldap) accounts with an admin page to approve or deny these requests.
 
 When approved, it creates the account in lldap, adds it to a group if one is defined, and triggers a reset password link to email the user to reset (aka. setup) their password.
 
