@@ -91,6 +91,8 @@ services:
 * Put new user sign up behind a password or something similar
 * Sent a notice to an Admin when there is a new user to approve
 * Connect to lldap directly using [GraphQL API calls](https://github.com/lldap/lldap/blob/main/schema.graphql) (not relying on lldap-cli)
+* Option to not require approval but auto-approve all requests
+* Better handling of errors/validations
 * Any number of UI improvements
 * ~~Use environment variable for what group(s) to add the new user to~~
 * ~~Don't rely on Authelia for the password reset email and/or support other tools (ex. Authentik, Keycloak, etc.)~~
