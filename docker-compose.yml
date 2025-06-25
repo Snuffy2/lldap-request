@@ -11,8 +11,6 @@ services:
       - ./database:/app/database
       - ./lldap_data:/app/data  # Your local lldap config path
     environment:
-      AUTHELIA_URL: https://auth.domain.com
+      LLDAP_URL: https://lldap.domain.com
       LLDAP_USERNAME: admin
       LLDAP_PASSWORD: changeme
-      LLDAP_USER_GROUP: authelia_users
-      DEBUG: 'true'
