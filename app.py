@@ -10,7 +10,6 @@ import sqlite3
 from flask import Flask, redirect, render_template, request
 
 from const import (
-    DEFAULT_LLDAP_CONFIG,
     DEFAULT_LLDAP_HTTPURL,
     DEFAULT_LOGLEVEL,
     DEFAULT_RESET_TYPE,
@@ -20,7 +19,7 @@ from const import (
     RESET_TYPES,
     VERSION,
 )
-from lldap_cli_wrapper import create_user
+from lldap_wrapper import create_user
 
 debug = os.getenv("DEBUG", "")
 if debug.lower() in {"1", "true", "yes"}:
@@ -60,8 +59,6 @@ if reset_type == "authelia" and "AUTHELIA_URL" not in os.environ:
     raise OSError("AUTHELIA_URL must be set when RESET_TYPE is 'authelia'")
 _LOGGER.debug("AUTHELIA_URL: %s", os.getenv("AUTHELIA_URL", "Not set"))
 _LOGGER.debug("LLDAP_URL: %s", os.getenv("LLDAP_URL", "Not set"))
-
-_LOGGER.debug("LLDAP_CONFIG: %s", os.getenv("LLDAP_CONFIG", DEFAULT_LLDAP_CONFIG))
 _LOGGER.debug("LLDAP_HTTPURL: %s", os.getenv("LLDAP_HTTPURL", DEFAULT_LLDAP_HTTPURL))
 
 DB_DIR = Path("database")
