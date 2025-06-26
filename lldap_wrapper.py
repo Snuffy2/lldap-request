@@ -17,8 +17,8 @@ def create_user(uid, email, displayname=None, firstname=None, lastname=None) -> 
     """Create a new user in lldap using the GraphQL API."""
     group_name: str = os.getenv("LLDAP_USER_GROUP", "").strip()
     lldap_httpurl: str = os.getenv("LLDAP_HTTPURL", DEFAULT_LLDAP_HTTPURL)
-    admin_user: str = os.getenv("LLDAP_ADMIN_USER", "admin")
-    admin_pass: str = os.getenv("LLDAP_ADMIN_PASS", "")
+    admin_user: str = os.getenv("LLDAP_USERNAME", "").strip()
+    admin_pass: str = os.getenv("LLDAP_PASSWORD", "")
 
     client = lldap_graphql(admin_user, admin_pass, base_url=lldap_httpurl)
     try:
