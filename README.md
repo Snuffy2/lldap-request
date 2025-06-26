@@ -4,8 +4,6 @@ A working, but simple web tool to request new [lldap](https://github.com/lldap/l
 
 When approved, it creates the account in lldap, adds it to a group if one is defined, and triggers a reset password link to email the user to reset (aka. setup) their password.
 
-It uses [lldap-cli](https://github.com/Zepmann/lldap-cli) in the docker container to interface with lldap.
-
 ## Docker Environment Variables
 
 | Name | Required | Default | Description |
@@ -15,7 +13,6 @@ It uses [lldap-cli](https://github.com/Zepmann/lldap-cli) in the docker containe
 | AUTHELIA_URL | X |  | e.g. <https://auth.domain.com><br />Required if RESET_TYPE is authelia |
 | LLDAP_USERNAME | X |  | lldap user with account-creation rights |
 | LLDAP_PASSWORD | X |  | Password for the above user |
-| LLDAP_CONFIG |  | /app/data/lldap_config.toml | Location (in the container) & name of the lldap config file<br />Ensure the volume mount also aligns with this |
 | LLDAP_HTTPURL |  | <http://lldap:17170> | Internal, base address of lldap |
 | LLDAP_USER_GROUP |  |  | Group to add new users to (if set) |
 | DEBUG |  | false | Show debug logging if `true` |
@@ -37,7 +34,6 @@ services:
       - "5005:5000"
     volumes:
       - ./database:/app/database
-      - ./lldap_data:/app/data  # Your local lldap config path
     environment:
       LLDAP_URL: https://lldap.domain.com
       LLDAP_USERNAME: admin
@@ -61,7 +57,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./database:/app/database
-      - ./lldap_data:/app/data  # Your local lldap config path
     environment:
       RESET_TYPE: authelia
       AUTHELIA_URL: https://auth.domain.com
@@ -90,10 +85,10 @@ services:
 * Support optional basic authentication for the admin page
 * Put new user sign up behind a password or something similar
 * Sent a notice to an Admin when there is a new user to approve
-* Connect to lldap directly using [GraphQL API calls](https://github.com/lldap/lldap/blob/main/schema.graphql) (not relying on lldap-cli)
 * Option to not require approval but auto-approve all requests
 * Better handling of errors/validations
 * Any number of UI improvements
+* ~~Connect to lldap directly using [GraphQL API calls](https://github.com/lldap/lldap/blob/main/schema.graphql) (not relying on lldap-cli)~~
 * ~~Use environment variable for what group(s) to add the new user to~~
 * ~~Don't rely on Authelia for the password reset email and/or support other tools (ex. Authentik, Keycloak, etc.)~~
 
