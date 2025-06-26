@@ -7,7 +7,6 @@ services:
     restart: unless-stopped
     volumes:
       - ./database:/app/database
-      - ./lldap_data:/app/data  # Your local lldap config path
     environment:
       RESET_TYPE: authelia
       AUTHELIA_URL: https://auth.domain.com

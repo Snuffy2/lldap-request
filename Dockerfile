@@ -14,10 +14,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Install lldap-cli
-RUN curl -sL https://raw.githubusercontent.com/Zepmann/lldap-cli/refs/heads/main/lldap-cli -o /usr/local/bin/lldap-cli && \
-    chmod +x /usr/local/bin/lldap-cli
-
 # Download and extract lldap_set_password from the latest GitHub release for this arch
 RUN ARCHIVE=unknown && \
     case "$TARGETARCH" in \
