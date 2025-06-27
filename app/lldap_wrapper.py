@@ -7,8 +7,8 @@ from typing import Any
 
 import requests
 
-from const import DEFAULT_LLDAP_HTTPURL, DEFAULT_RESET_TYPE, RESET_TYPES
-from lldap_graphql import APIResponseError, lldap_graphql
+from .const import DEFAULT_LLDAP_HTTPURL, DEFAULT_RESET_TYPE, RESET_TYPES
+from .lldap_graphql import APIResponseError, lldap_graphql
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 

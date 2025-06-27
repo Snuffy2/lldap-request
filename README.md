@@ -1,6 +1,8 @@
 # lldap-request
 
-A working, but simple web tool to request new [lldap](https://github.com/lldap/lldap) accounts with an admin page to approve or deny these requests.
+<img src="images/logo.png" width="150" align="right" alt="lldap-request logo"/>
+
+A simple web tool to request new [lldap](https://github.com/lldap/lldap) accounts with an _optional_ admin page to approve or deny these requests.
 
 When approved, it creates the account in lldap, adds it to a group if one is defined, and triggers a reset password link to email the user to reset (aka. setup) their password.
 
@@ -15,7 +17,7 @@ When approved, it creates the account in lldap, adds it to a group if one is def
 | LLDAP_PASSWORD | X |  | Password for the above user |
 | LLDAP_HTTPURL |  | <http://lldap:17170> | Internal, base address of lldap |
 | LLDAP_USER_GROUP |  |  | Group to add new users to (if set) |
-| REQUIRE_APPROVAL | | true | If false, accounts will automatically be created as soon as they are requested |
+| REQUIRE_APPROVAL | | true | If `false`, accounts will automatically be created as soon as they are requested |
 | DEBUG |  | false | Show debug logging if `true` |
 
 ### Example docker-compose.yml
