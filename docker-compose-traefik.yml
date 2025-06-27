@@ -13,6 +13,7 @@ services:
       LLDAP_USERNAME: admin
       LLDAP_PASSWORD: changeme
       LLDAP_USER_GROUP: authelia_users
+      REQUIRE_APPROVAL: 'false'
       DEBUG: 'true'
     labels:
       - traefik.enable=true

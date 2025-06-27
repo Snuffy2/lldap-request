@@ -12,5 +12,6 @@ DEFAULT_LOGLEVEL = logging.INFO
 REQUIRED_VARS: list[str] = ["LLDAP_USERNAME", "LLDAP_PASSWORD"]
 RESET_TYPES: list[str] = ["lldap", "authelia"]
 
+DEFAULT_REQUIRE_APPROVAL = "true"
 DEFAULT_RESET_TYPE = "lldap"
 DEFAULT_LLDAP_HTTPURL = "http://lldap:17170"

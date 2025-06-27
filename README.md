@@ -15,6 +15,7 @@ When approved, it creates the account in lldap, adds it to a group if one is def
 | LLDAP_PASSWORD | X |  | Password for the above user |
 | LLDAP_HTTPURL |  | <http://lldap:17170> | Internal, base address of lldap |
 | LLDAP_USER_GROUP |  |  | Group to add new users to (if set) |
+| REQUIRE_APPROVAL | | true | If false, accounts will automatically be created as soon as they are requested |
 | DEBUG |  | false | Show debug logging if `true` |
 
 ### Example docker-compose.yml

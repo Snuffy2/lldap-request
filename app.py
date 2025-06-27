@@ -12,6 +12,7 @@ from flask import Flask, redirect, render_template, request
 from const import (
     DEFAULT_LLDAP_HTTPURL,
     DEFAULT_LOGLEVEL,
+    DEFAULT_REQUIRE_APPROVAL,
     DEFAULT_RESET_TYPE,
     LOG_DATE_FORMAT,
     LOG_FORMAT,
@@ -61,6 +62,14 @@ _LOGGER.debug("AUTHELIA_URL: %s", os.getenv("AUTHELIA_URL", "Not set"))
 _LOGGER.debug("LLDAP_URL: %s", os.getenv("LLDAP_URL", "Not set"))
 _LOGGER.debug("LLDAP_HTTPURL: %s", os.getenv("LLDAP_HTTPURL", DEFAULT_LLDAP_HTTPURL))
 
+REQUIRE_APPROVAL: bool = os.getenv("REQUIRE_APPROVAL", DEFAULT_REQUIRE_APPROVAL).lower() in {
+    "1",
+    "true",
+    "yes",
+}
+_LOGGER.debug("REQUIRE_APPROVAL: %s", REQUIRE_APPROVAL)
+
+
 DB_DIR = Path("database")
 DB_PATH: Path = DB_DIR / "requests.db"
 DB_DIR.mkdir(parents=True, exist_ok=True)
@@ -92,7 +101,7 @@ _LOGGER.info("Startup complete")
 @app.route("/", methods=["GET"])
 def index():
     """Show the main request account form."""
-    _LOGGER.info("Index page accessed")
+    _LOGGER.info("Request account page accessed")
     return render_template("index.html", version=VERSION)
 
 
@@ -104,6 +113,7 @@ def submit() -> str:
     displayname: str = request.form.get("displayname", "")
     firstname: str = request.form.get("firstname", "")
     lastname: str = request.form.get("lastname", "")
+
     with sqlite3.connect(DB_PATH) as conn:
         conn.execute(
             """
@@ -114,6 +124,23 @@ def submit() -> str:
         )
     _LOGGER.info("New account request submitted: %s (%s)", username, email)
 
+    if REQUIRE_APPROVAL:
+        message = "Your request has been submitted and is pending approval"
+    else:
+        success, msg = create_user(username, email, displayname, firstname, lastname)
+        if success:
+            with sqlite3.connect(DB_PATH) as conn:
+                conn.execute(
+                    "UPDATE requests SET status = 'approved' WHERE username = ? AND email = ? AND status = 'pending'",
+                    (username, email),
+                )
+                conn.commit()
+            message = "Your account has been created"
+            _LOGGER.info(msg)
+        else:
+            message = f"Error creating account: {msg}"
+            _LOGGER.error(msg)
+
     if reset_type == "lldap":
         redirect_url = os.getenv("LLDAP_URL", "/")
     elif reset_type == "authelia":
@@ -123,7 +150,7 @@ def submit() -> str:
 
     return render_template(
         "submitted.html",
-        message="Your request has been submitted",
+        message=message,
         redirect_url=redirect_url,
         delay=10,
         version=VERSION,
