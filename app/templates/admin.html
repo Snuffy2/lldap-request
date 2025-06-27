@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}Account Requests - Admin{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-md">
+  <h1 class="text-2xl font-bold mb-4 text-center">Pending Account Requests</h1>
+
+  {% if requests %}
+    <table class="w-full table-auto border-collapse text-sm">
+      <thead>
+        <tr class="bg-gray-200 text-left">
+          <th class="p-2">Username</th>
+          <th class="p-2">Email</th>
+          <th class="p-2">Display Name</th>
+          <th class="p-2">First</th>
+          <th class="p-2">Last</th>
+          <th class="p-2">Actions</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for req in requests %}
+        <tr>
+          <td class="p-2">{{ req[1] }}</td>
+          <td class="p-2">{{ req[2] }}</td>
+          <td class="p-2">{{ req[3] }}</td>
+          <td class="p-2">{{ req[4] }}</td>
+          <td class="p-2">{{ req[5] }}</td>
+          <td class="p-2 space-x-2">
+            <form method="post" action="/approve/{{ req[0] }}" style="display:inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700">Approve</button>
+            </form>
+            <form method="post" action="/deny/{{ req[0] }}" style="display:inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700">Deny</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  {% else %}
+    <p class="text-center text-gray-600">No pending requests</p>
+  {% endif %}
+</div>
+{% endblock %}

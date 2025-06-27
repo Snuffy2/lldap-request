@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Request an Account{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto mt-10 p-6 bg-white rounded-2xl shadow-md">
+  <h1 class="text-2xl font-bold mb-4 text-center">Request an Account</h1>
+  <form method="POST" action="/submit" class="space-y-4">
++  <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    {% set labels = {
+      'username':    'Username',
+      'email':       'Email',
+      'displayname': 'Display name',
+      'firstname':   'First name',
+      'lastname':    'Last name'
+    } %}
+
+    {% for field in ['username', 'email', 'displayname', 'firstname', 'lastname'] %}
+      <div>
+        <label class="block font-medium capitalize mb-1" for="{{ field }}">{{
+          labels.get(field, field.replace('_', ' '))
+        }}</label>
+        <input
+          class="w-full border border-gray-300 rounded-lg px-3 py-2"
+          type="text"
+          id="{{ field }}"
+          name="{{ field }}"
+          {% if field in ['username', 'email'] %} required {% endif %}
+        >
+      </div>
+    {% endfor %}
+    <div class="text-center">
+      <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">Submit Request</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

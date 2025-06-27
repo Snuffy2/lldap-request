@@ -8,8 +8,9 @@ from pathlib import Path
 import sqlite3
 
 from flask import Flask, redirect, render_template, request
+from flask_wtf.csrf import CSRFProtect
 
-from const import (
+from .const import (
     DEFAULT_LLDAP_HTTPURL,
     DEFAULT_LOGLEVEL,
     DEFAULT_REQUIRE_APPROVAL,
@@ -20,7 +21,7 @@ from const import (
     RESET_TYPES,
     VERSION,
 )
-from lldap_wrapper import create_user
+from .lldap_wrapper import create_user
 
 debug = os.getenv("DEBUG", "")
 if debug.lower() in {"1", "true", "yes"}:
@@ -40,6 +41,8 @@ _LOGGER: logging.Logger = logging.getLogger(__name__)
 
 _LOGGER.info("Starting lldap-request %s", VERSION)
 app = Flask("lldap-request")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "X6mMePk3TrgERzyi849E")
+csrf = CSRFProtect(app)
 
 if LOGLEVEL == logging.DEBUG:
     _LOGGER.debug("Debug mode is enabled")
@@ -166,7 +169,7 @@ def admin():
     return render_template("admin.html", requests=requests, version=VERSION)
 
 
-@app.route("/approve/<int:req_id>")
+@app.route("/approve/<int:req_id>", methods=["POST"])
 def approve(req_id):
     """Approve a new account."""
     _LOGGER.info("Approving request ID %d", req_id)
@@ -189,7 +192,7 @@ def approve(req_id):
     return redirect("/admin")
 
 
-@app.route("/deny/<int:req_id>")
+@app.route("/deny/<int:req_id>", methods=["POST"])
 def deny(req_id):
     """Deny a new account."""
     _LOGGER.info("Denying request ID %d", req_id)
