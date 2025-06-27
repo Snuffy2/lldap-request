@@ -5,10 +5,9 @@ import logging
 import os
 from typing import Any
 
+from const import DEFAULT_LLDAP_HTTPURL, DEFAULT_RESET_TYPE, RESET_TYPES
+from lldap_graphql import APIResponseError, lldap_graphql
 import requests
-
-from .const import DEFAULT_LLDAP_HTTPURL, DEFAULT_RESET_TYPE, RESET_TYPES
-from .lldap_graphql import APIResponseError, lldap_graphql
 
 _LOGGER: logging.Logger = logging.getLogger(__name__)
 

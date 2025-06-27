@@ -7,10 +7,7 @@ import os
 from pathlib import Path
 import sqlite3
 
-from flask import Flask, redirect, render_template, request
-from flask_wtf.csrf import CSRFProtect
-
-from .const import (
+from const import (
     DEFAULT_LLDAP_HTTPURL,
     DEFAULT_LOGLEVEL,
     DEFAULT_REQUIRE_APPROVAL,
@@ -21,7 +18,9 @@ from .const import (
     RESET_TYPES,
     VERSION,
 )
-from .lldap_wrapper import create_user
+from flask import Flask, redirect, render_template, request
+from flask_wtf.csrf import CSRFProtect
+from lldap_wrapper import create_user
 
 debug = os.getenv("DEBUG", "")
 if debug.lower() in {"1", "true", "yes"}:
