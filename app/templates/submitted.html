@@ -6,15 +6,16 @@
 <meta http-equiv="refresh" content="{{ delay }};url={{ redirect_url }}">
 {% endblock %}
 
-{% block body_class %}bg-gray-100 text-gray-900 font-sans flex items-center justify-center min-h-screen{% endblock %}
+{% block body_class %}bg-gray-100 text-gray-900 font-sans{% endblock %}
 
 {% block content %}
-<div class="bg-white rounded-2xl shadow-md max-w-md w-full p-6 text-center">
-  <h1 class="text-2xl font-bold text-green-600 mb-4">{{ message }}</h1>
-  <p class="text-sm text-gray-600">
-    You will be redirected shortly
-    <br />
-    If not, <a href="{{ redirect_url }}" class="text-blue-600 underline">click here</a>
-  </p>
+<div class="flex flex-col items-center justify-center py-24 px-4">
+  <div class="bg-white rounded-2xl shadow-md max-w-md w-full p-6 text-center">
+    <h1 class="text-2xl font-bold text-green-600 mb-4">{{ message }}</h1>
+    <p class="text-sm text-gray-600">
+      You will be redirected shortly<br />
+      If not, <a href="{{ redirect_url }}" class="text-blue-600 underline">click here</a>
+    </p>
+  </div>
 </div>
 {% endblock %}
