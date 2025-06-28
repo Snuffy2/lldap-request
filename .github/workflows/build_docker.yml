@@ -42,7 +42,7 @@ jobs:
       - name: Update Version in const.py
         if: ${{ github.event_name == 'release' && github.event.repository.default_branch == github.event.release.target_commitish && github.event.release.prerelease == false && github.event.release.draft == false }}
         run: |
-          sed -i 's/VERSION \= \".*\"/VERSION \= \"${{ github.event.release.tag_name }}\"/' ./const.py
+          sed -i 's/VERSION \= \".*\"/VERSION \= \"${{ github.event.release.tag_name }}\"/' ./app/const.py
 
       - name: Commit & Push Version Changes
         if: ${{ github.event_name == 'release' && github.event.repository.default_branch == github.event.release.target_commitish && github.event.release.prerelease == false && github.event.release.draft == false }}
