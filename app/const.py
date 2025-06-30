@@ -15,3 +15,4 @@ RESET_TYPES: list[str] = ["lldap", "authelia"]
 DEFAULT_REQUIRE_APPROVAL = "true"
 DEFAULT_RESET_TYPE = "lldap"
 DEFAULT_LLDAP_HTTPURL = "http://lldap:17170"
+DEFAULT_APPRISE_URL = "http://apprise:8000"

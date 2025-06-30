@@ -8,6 +8,7 @@ from pathlib import Path
 import sqlite3
 
 from const import (
+    DEFAULT_APPRISE_URL,
     DEFAULT_LLDAP_HTTPURL,
     DEFAULT_LOGLEVEL,
     DEFAULT_REQUIRE_APPROVAL,
@@ -21,8 +22,9 @@ from const import (
 from flask import Flask, redirect, render_template, request
 from flask_wtf.csrf import CSRFProtect
 from lldap_wrapper import create_user
+import requests
 
-debug = os.getenv("DEBUG", "")
+debug: str = os.getenv("DEBUG", "")
 if debug.lower() in {"1", "true", "yes"}:
     LOGLEVEL = logging.DEBUG
 else:
@@ -56,13 +58,20 @@ if reset_type not in RESET_TYPES:
     raise ValueError(f"Invalid RESET_TYPE: {reset_type}. Must be one of: {RESET_TYPES}")
 _LOGGER.debug("RESET_TYPE: %s", reset_type)
 
-if reset_type == "lldap" and "LLDAP_URL" not in os.environ:
-    raise OSError("LLDAP_URL must be set when RESET_TYPE is 'lldap'")
-if reset_type == "authelia" and "AUTHELIA_URL" not in os.environ:
-    raise OSError("AUTHELIA_URL must be set when RESET_TYPE is 'authelia'")
-_LOGGER.debug("AUTHELIA_URL: %s", os.getenv("AUTHELIA_URL", "Not set"))
-_LOGGER.debug("LLDAP_URL: %s", os.getenv("LLDAP_URL", "Not set"))
+if reset_type == "lldap":
+    if "LLDAP_URL" not in os.environ:
+        raise OSError("LLDAP_URL must be set when RESET_TYPE is 'lldap'")
+    _LOGGER.debug("LLDAP_URL: %s", os.getenv("LLDAP_URL"))
+elif reset_type == "authelia":
+    if "AUTHELIA_URL" not in os.environ:
+        raise OSError("AUTHELIA_URL must be set when RESET_TYPE is 'authelia'")
+    _LOGGER.debug("AUTHELIA_URL: %s", os.getenv("AUTHELIA_URL"))
 _LOGGER.debug("LLDAP_HTTPURL: %s", os.getenv("LLDAP_HTTPURL", DEFAULT_LLDAP_HTTPURL))
+_LOGGER.debug("APPRISE_URL: %s", os.getenv("APPRISE_URL", DEFAULT_APPRISE_URL))
+if "APPRISE_NOTIFY_ADMIN_URL" in os.environ:
+    _LOGGER.debug("APPRISE_NOTIFY_ADMIN_URL: %s", "Set")
+else:
+    _LOGGER.debug("APPRISE_NOTIFY_ADMIN_URL: %s", "Not set")
 
 REQUIRE_APPROVAL: bool = os.getenv("REQUIRE_APPROVAL", DEFAULT_REQUIRE_APPROVAL).lower() in {
     "1",
@@ -100,6 +109,34 @@ init_db()
 _LOGGER.info("Startup complete")
 
 
+def apprise_notify_admin(message: str, title: str | None = None) -> None:
+    """Send a notification to the admin using Apprise."""
+    apprise_url: str = os.getenv("APPRISE_URL", DEFAULT_APPRISE_URL)
+    notify_url: str | None = os.getenv("APPRISE_NOTIFY_ADMIN_URL")
+
+    if not notify_url:
+        return
+
+    if not title:
+        title = "New Account Request (lldap-request)"
+
+    try:
+        response: requests.Response = requests.post(
+            f"{apprise_url}/notify",
+            data={"urls": notify_url, "body": message, "title": title},
+            timeout=5,
+        )
+
+        if response.status_code != 200:
+            _LOGGER.error(
+                "Apprise admin notification failed: %s - %s", response.status_code, response.text
+            )
+    except requests.RequestException as e:
+        _LOGGER.error("Error sending apprise admin notification. %s: %s", type(e).__name__, e)
+    else:
+        _LOGGER.info("Apprise admin notification sent sucessfully")
+
+
 @app.route("/", methods=["GET"])
 def index():
     """Show the main request account form."""
@@ -127,7 +164,8 @@ def submit() -> str:
     _LOGGER.info("New account request submitted: %s (%s)", username, email)
 
     if REQUIRE_APPROVAL:
-        message = "Your request has been submitted and is pending approval"
+        message: str = "Your request has been submitted and is pending approval"
+        apprise_notify_admin(f"New account request submitted by: {username} ({email})")
     else:
         success, msg = create_user(username, email, displayname, firstname, lastname)
         if success:
@@ -139,12 +177,13 @@ def submit() -> str:
                 conn.commit()
             message = "Your account has been created"
             _LOGGER.info(msg)
+            apprise_notify_admin(f"New account created for: {username} ({email})")
         else:
             message = f"Error creating account: {msg}"
             _LOGGER.error(msg)
 
     if reset_type == "lldap":
-        redirect_url = os.getenv("LLDAP_URL", "/")
+        redirect_url: str = os.getenv("LLDAP_URL", "/")
     elif reset_type == "authelia":
         redirect_url = os.getenv("AUTHELIA_URL", "/")
     else:
