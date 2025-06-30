@@ -21,8 +21,9 @@ from const import (
 from flask import Flask, redirect, render_template, request
 from flask_wtf.csrf import CSRFProtect
 from lldap_wrapper import create_user
+import requests
 
-debug = os.getenv("DEBUG", "")
+debug: str = os.getenv("DEBUG", "")
 if debug.lower() in {"1", "true", "yes"}:
     LOGLEVEL = logging.DEBUG
 else:
@@ -100,6 +101,31 @@ init_db()
 _LOGGER.info("Startup complete")
 
 
+def apprise_notify_admin(message: str, title: str | None = None) -> None:
+    """Send a notification to the admin using Apprise."""
+    apprise_url: str | None = os.getenv("APPRISE_URL")
+    notify_url: str | None = os.getenv("APPRISE_NOTIFY_ADMIN_URL")
+    if not apprise_url or not notify_url:
+        return
+
+    if not title:
+        title = "New Account Request (lldap-request)"
+
+    try:
+        response: requests.Response = requests.post(
+            f"{apprise_url}/notify",
+            params={"url": notify_url},
+            data={"body": message, "title": title},
+            timeout=5,
+        )
+        if not response.ok:
+            _LOGGER.error(
+                "Apprise notification failed: %s - %s", response.status_code, response.text
+            )
+    except requests.RequestException as e:
+        _LOGGER.error("Error sending apprise notification. %s: %s", type(e).__name__, e)
+
+
 @app.route("/", methods=["GET"])
 def index():
     """Show the main request account form."""
@@ -127,7 +153,8 @@ def submit() -> str:
     _LOGGER.info("New account request submitted: %s (%s)", username, email)
 
     if REQUIRE_APPROVAL:
-        message = "Your request has been submitted and is pending approval"
+        message: str = "Your request has been submitted and is pending approval"
+        apprise_notify_admin(f"New account request submitted by: {username} ({email})")
     else:
         success, msg = create_user(username, email, displayname, firstname, lastname)
         if success:
@@ -139,12 +166,13 @@ def submit() -> str:
                 conn.commit()
             message = "Your account has been created"
             _LOGGER.info(msg)
+            apprise_notify_admin(f"New account created for: {username} ({email})")
         else:
             message = f"Error creating account: {msg}"
             _LOGGER.error(msg)
 
     if reset_type == "lldap":
-        redirect_url = os.getenv("LLDAP_URL", "/")
+        redirect_url: str = os.getenv("LLDAP_URL", "/")
     elif reset_type == "authelia":
         redirect_url = os.getenv("AUTHELIA_URL", "/")
     else:
