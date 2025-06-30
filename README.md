@@ -18,6 +18,8 @@ When approved, it creates the account in lldap, adds it to a group if one is def
 | LLDAP_HTTPURL |  | <http://lldap:17170> | Internal, base address of lldap |
 | LLDAP_USER_GROUP |  |  | Group to add new users to (if set) |
 | REQUIRE_APPROVAL | | true | If `false`, accounts will automatically be created as soon as they are requested |
+| APPRISE_URL | | <http://apprise:8000> | The url where Apprise is installed |
+| APPRISE_NOTIFY_ADMIN_URL | | | The apprise notification url to send the message to (see [Apprise docs](https://github.com/caronc/apprise/wiki#notification-services))
 | DEBUG |  | false | Show debug logging if `true` |
 
 ### Example docker-compose.yml
