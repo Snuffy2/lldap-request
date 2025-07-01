@@ -3,7 +3,7 @@
 import logging
 
 # Will auto-update based on GitHub release
-VERSION = "v0.1.2"
+VERSION = "v0.1.3"
 
 LOG_FORMAT = "%(asctime)-20s %(levelname)-9s [%(name)s] %(message)s"
 LOG_DATE_FORMAT = "%Y-%m-%d %H:%M:%S"
