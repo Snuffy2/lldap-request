@@ -31,7 +31,7 @@ jobs:
           echo "github.event.release.draft: ${{ github.event.release.draft }}"
 
       - name: Checkout
-        uses: actions/checkout@v6.0.1
+        uses: actions/checkout@v6.0.2
         with:
           fetch-depth: 0
 
